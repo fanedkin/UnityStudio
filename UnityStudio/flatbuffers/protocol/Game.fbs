@@ -1,0 +1,261 @@
+// Generated from Game.proto
+
+namespace Flat;
+
+struct Flat_Vector3 {
+  x:float;
+  y:float;
+  z:float;
+}
+
+struct Flat_Vector2 {
+  x:float;
+  y:float;
+}
+
+struct Flat_Quaternion {
+  x:float;
+  y:float;
+  z:float;
+  w:float;
+}
+
+table ConnectPlayer {
+  id:int;
+  mechineName:string;
+  mechineid:string;
+  weaponType:int;
+  playerStyle:int;
+  GroupId:int;
+  joinState:bool;
+}
+
+//------------------------------------------------------------------------------------------------------------------------
+//CmdCode: ConnectToHost = 1,  //连接到主机(一般由客户端机主动定时发送请求，确认与Host的连接)
+table C2SConnectToHost {
+  machineName:string;
+  machineId:string;
+}
+
+//发起C2SConnectToHost请求的主机的回应信息
+table S2CConnectToHost {
+  issucceed:bool = 1;
+  playerId:int;
+  playerList:[ConnectPlayer];
+}
+
+//CmdCode:PlayerEnterNotify = 2,//玩家进入推送通知；其它的玩家成功C2SConnectToHost后，自己会接收到S2CPlayerEnterNotify
+table S2CPlayerEnterNotify {
+  player:ConnectPlayer;
+}
+//------------------------------------------------------------------------------------------------------------------------
+
+//------------------------------------------------------------------------------------------------------------------------
+//CmdCode: DisconnectToHost = 3,  //断开与主机的连接(一般在客户端关闭时操作)
+table C2SDisConnectToHost {
+}
+
+//发起C2SDisConnectToHost请求的主机的回应信息
+table S2CDisConnectToHost {
+  issucceed:bool;
+}
+
+//CmdCode:PlayerQuitNotify = 4,//玩家离开推送通知；其它的玩家成功C2SDisConnectToHost后，自己会接收到S2CPlayerQuitNotify
+table S2CPlayerQuitNotify {
+  disConnectPlayerId:int;
+}
+//------------------------------------------------------------------------------------------------------------------------
+
+//------------------------------------------------------------------------------------------------------------------------
+//CmdCode:SyncPlayerGlobalInfo = 8,//玩家信息同步（位置，面向），包括枪和头盔等
+table C2SSyncPlayerGlobalInfo {
+  playerPos:Flat_Vector3;
+  playerRotate:Flat_Quaternion;
+  GunPos:Flat_Vector3;
+  GunRotate:Flat_Quaternion;
+  GunForward:Flat_Vector3;
+  VRHeadPos:Flat_Vector3;
+  VRHeadRotate:Flat_Quaternion;
+}
+
+//广播给除了C2SSyncPlayerGlobalInfo的其它玩家
+table S2CSyncPlayerGlobalInfo {
+  objId:int;
+  playerPos:Flat_Vector3;
+  playerRotate:Flat_Quaternion;
+  GunPos:Flat_Vector3;
+  GunRotate:Flat_Quaternion;
+  GunForward:Flat_Vector3;
+  VRHeadPos:Flat_Vector3;
+  VRHeadRotate:Flat_Quaternion;
+}
+//------------------------------------------------------------------------------------------------------------------------
+
+//------------------------------------------------------------------------------------------------------------------------
+//CmdCode:ReloadMagazine = 12,  弹药库补给协议,
+table S2CReloadMagazineNotify {
+  playerObjId:int;
+}
+
+//CmdCode:FireBulletCreate = 11, //（开火）创建子弹（子弹面向以及旋转）
+table C2SFireBulletCreate {
+  objId:int;
+  pos:Flat_Vector3;
+  rotate:Flat_Quaternion;
+}
+
+//广播给所有玩家子弹开火（包括C2SFireBulletCreate都要依赖接收到S2CFireBulletCreate才能开火）
+table S2CFireBulletCreate {
+  objId:int;
+  pos:Flat_Vector3;
+  rotate:Flat_Quaternion;
+}
+//------------------------------------------------------------------------------------------------------------------------
+
+table NpcSpawnInfo {
+  objId:int;
+  npcId:int;
+  spawnPointId:int;
+  groupId:int;
+}
+
+table S2CNpcCreateNotify {
+  npcList:[NpcSpawnInfo];
+}
+
+table MonsterSpawnInfo {
+  id:int;
+  databaseId:int;
+  spawnPoint:int;
+  spawnPos:Flat_Vector3;
+  spawnRot:Flat_Quaternion;
+}
+
+table S2CMonsterCreateNotify {
+  monsterList:[MonsterSpawnInfo];
+}
+
+table S2CMonsterAnimationSyncNotify {
+  objId:int;
+  stateName:string;
+  transitionDuration:float;
+  layerIndex:int;
+}
+
+table UnitTransform {
+  objId:int;
+  pos:Flat_Vector3;
+  rotate:Flat_Quaternion;
+  npcBoneRot:Flat_Quaternion; //modify 2018.1.26 同步骨骼旋转,临时使用,以后改用ik
+}
+
+table S2CUnitInfoSyncNotify {
+  unitInfoList:[UnitTransform];
+}
+
+//------------------------------------------------------------------------------------------------------------------------
+//CmdCode:HitDamage = 23, //伤害计算（玩家子弹击中怪物是由客户端发送击中信息，然后主机处理并转发回所有客户端，怪物攻击是纯主机计算）
+table S2CHitDamage {
+  attackerId:int;
+  hurterId:int;
+  hitStatus:int;
+  atkType:int;
+  atkEffectType:int;
+  curHP:int;
+  damage:int;
+  healValue:int;
+  hitForce:int;  //击中力：主要用于击中死亡Ragdoll效果
+  hitDir:Flat_Vector3;
+  bodyPartId:int;
+  hitHead:bool;
+}
+
+table C2SHitDamage {
+  attackerId:int;
+  hurterId:int;
+  hitStatus:int;
+  atkType:int;
+  atkEffectType:int;
+  curHP:int;
+  damage:int;
+  healValue:int;
+  hitForce:int; //击中力：主要用于击中死亡Ragdoll效果
+  hitDir:Flat_Vector3;
+  bodyPartId:int;
+  hitHead:bool;
+}
+//------------------------------------------------------------------------------------------------------------------------
+
+table C2SPlayerRevive {
+  playerObjId:int;
+}
+
+table S2CPlayerRevive {
+  playerObjId:int;
+}
+
+//------------------------------------------------------------------------------------------------------------------------
+//CmdCode:MonsterBulletCretateNotify = 26, //怪物子弹（主机逻辑，没有上行）
+table S2CMonsterBulletCretateNotify {
+  objId:int;
+  targetId:int;
+  assetId:int;
+  firePos:Flat_Vector3;
+  fireRot:Flat_Quaternion;
+  targetOffset:Flat_Vector3;
+  randomSeed:int;
+}
+//------------------------------------------------------------------------------------------------------------------------
+
+//------------------------------------------------------------------------------------------------------------------------
+//CmdCode:BattleStateSwitchNotify = 28, //战场状态切换（主机逻辑，没有上行）
+table S2CBattleStateSwitchNotify {
+  stateType:int;
+  stateArg:string;
+}
+//------------------------------------------------------------------------------------------------------------------------
+
+//------------------------------------------------------------------------------------------------------------------------
+//CmdCode:GameInfoNotify = 29, //游戏信息下发
+table S2CGameInfoNotify {
+    infoPlayerId:int;  //信息关联id
+    infoType:int;  //信息类型
+    infoValue:string;  //信息类型
+}
+//------------------------------------------------------------------------------------------------------------------------
+
+//------------------------------------------------------------------------------------------------------------------------
+//CmdCode:GameLogicSwitchNotify = 30, //游戏类型切换
+table S2CGameLogicSwitchNotify {
+    gameLogicType:int;
+}
+//------------------------------------------------------------------------------------------------------------------------
+
+//------------------------------------------------------------------------------------------------------------------------
+//CmdCode:GameScoreNotify = 31, //游戏分数消息
+table S2CGameScoreNotify {
+	groupId:int;
+    score:int;
+}
+//------------------------------------------------------------------------------------------------------------------------
+
+//------------------------------------------------------------------------------------------------------------------------
+//CmdCode:OccupyScoreNotify = 102, //占领得分消息,目前只用于占领得分音效的特殊需求
+table S2COccupyScoreNotify {
+    groupId:int;
+}
+//------------------------------------------------------------------------------------------------------------------------
+
+table S2CCutScenesNotify {
+  CutScenesType:int;
+  CutScenesStatus:byte;
+}
+
+table S2CBattleStatisticalResults {
+  results:string;
+}
+
+table S2CPlayAmbientEffectNotify {
+  eventId:int;
+  pointName:string;
+}

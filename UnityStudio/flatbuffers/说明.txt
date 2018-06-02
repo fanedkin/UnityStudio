@@ -1,0 +1,8 @@
+协议生成步骤:
+1.编写协议，后缀名为.fbs
+2.放在protocol文件夹内
+3.调用FlatGen.bat
+
+protobuf协议转flatbuffers协议步骤(注意：此方法生成后需手动改一些小问题):
+1.将后缀名为.proto的protobuf协议放进protocol文件夹内
+2.调用ProtoToFlat.bat，会直接在文件夹内生成同名.fbs文件。

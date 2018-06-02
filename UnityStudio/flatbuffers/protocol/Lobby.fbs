@@ -1,0 +1,9 @@
+// Generated from Lobby.proto
+
+namespace Flat;
+
+table S2CLobbyOperationNotify {
+  OperationType:int;
+  OperationPlayerId:int;
+  OperationValue:int;
+}

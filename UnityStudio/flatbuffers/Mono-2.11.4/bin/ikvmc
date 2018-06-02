@@ -1,0 +1,2 @@
+#!/bin/sh
+exec mono @@WIN_MONO_INST_DIR@@/lib/ikvm/ikvmc.exe "$@"

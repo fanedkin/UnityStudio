@@ -1,0 +1,2 @@
+#!/bin/sh
+exec @@WIN_MONO_INST_DIR@@/bin/mono @@WIN_MONO_INST_DIR@@/share/NAnt/bin/NAnt.exe "$@"

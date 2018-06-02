@@ -1,0 +1,7 @@
+#!/bin/sh
+if [ -x @@WIN_MONO_INST_DIR@@/bin/cli ]; then
+    env @@WIN_MONO_INST_DIR@@/bin/cli $MONO_OPTIONS ${exec_prefix}/lib/boo/booi.exe $BOOI_OPTIONS "$@"
+else
+    env @@WIN_MONO_INST_DIR@@/bin/mono $MONO_OPTIONS ${exec_prefix}/lib/boo/booi.exe $BOOI_OPTIONS "$@"
+fi
+
